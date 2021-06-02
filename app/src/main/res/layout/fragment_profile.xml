@@ -87,7 +87,7 @@
                 app:layout_constraintTop_toBottomOf="@+id/etPhone" />
 
             <ImageView
-                android:visibility="invisible"
+                android:visibility="gone"
                 android:id="@+id/ic_verified"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -95,10 +95,10 @@
                 app:layout_constraintBottom_toBottomOf="@+id/etEmail"
                 app:layout_constraintEnd_toEndOf="@+id/etName"
                 app:layout_constraintStart_toEndOf="@+id/etEmail"
-                app:layout_constraintTop_toTopOf="@+id/etEmail" />
+                app:layout_constraintTop_toTopOf="@+id/etEmail"
+                android:contentDescription="@string/verified_email" />
 
             <ImageView
-                android:visibility="invisible"
                 android:id="@+id/ic_unverified"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -106,7 +106,18 @@
                 app:layout_constraintBottom_toBottomOf="@+id/etEmail"
                 app:layout_constraintEnd_toEndOf="@+id/etName"
                 app:layout_constraintStart_toEndOf="@+id/etEmail"
-                app:layout_constraintTop_toTopOf="@+id/etEmail" />
+                app:layout_constraintTop_toTopOf="@+id/etEmail"
+                android:contentDescription="@string/unverified_email" />
+
+            <Button
+                android:id="@+id/btn_unregis"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="10dp"
+                android:text="Unregis"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@+id/btnUpdate"
+                app:layout_constraintTop_toTopOf="@+id/btnUpdate" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 

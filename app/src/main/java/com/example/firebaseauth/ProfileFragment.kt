@@ -1,22 +1,29 @@
 package com.example.firebaseauth
 
+import android.Manifest
 import android.annotation.SuppressLint
 import android.app.Activity.RESULT_OK
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.net.Uri
 import android.os.Bundle
 import android.provider.MediaStore
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.navigation.Navigation
 import com.example.firebaseauth.databinding.FragmentProfileBinding
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.UserProfileChangeRequest
 import com.google.firebase.storage.FirebaseStorage
 import com.squareup.picasso.Picasso
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import java.io.ByteArrayOutputStream
 
 
@@ -25,16 +32,12 @@ class ProfileFragment : Fragment() {
     private lateinit var profileBinding: FragmentProfileBinding
     private lateinit var imageUri: Uri
     private lateinit var auth: FirebaseAuth
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-
-    }
+    private var myBitmap: Bitmap? = null
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
-        // Inflate the layout for this fragment
+    ): View {
         profileBinding = FragmentProfileBinding.inflate(inflater, container, false)
         return profileBinding.root
     }
@@ -42,7 +45,6 @@ class ProfileFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         auth = FirebaseAuth.getInstance()
-
         val userData = auth.currentUser
         if (userData != null) {
             profileBinding.apply {
@@ -72,7 +74,20 @@ class ProfileFragment : Fragment() {
         }
         profileBinding.apply {
             ivProfile.setOnClickListener {
-                intentCamera()
+                getImage()
+            }
+        }
+        profileBinding.btnUnregis.setOnClickListener {
+            userData?.delete()?.addOnCompleteListener {
+                if (it.isSuccessful) {
+                    Toast.makeText(activity, "Unregistered", Toast.LENGTH_SHORT).show()
+                    auth.signOut()
+                    Intent(activity, LoginActivity::class.java).also { destroy ->
+                        destroy.flags =
+                            Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+                        startActivity(destroy)
+                    }
+                }
             }
         }
         profileBinding.btnUpdate.setOnClickListener {
@@ -106,12 +121,57 @@ class ProfileFragment : Fragment() {
                     }
             }
         }
+        profileBinding.icVerified.setOnClickListener {
+            Toast.makeText(activity, "Email is Verified!", Toast.LENGTH_SHORT).show()
+        }
+        profileBinding.icUnverified.setOnClickListener {
+            CoroutineScope(Dispatchers.Main).launch {
+                when (auth.currentUser) {
+                    auth.currentUser?.reload() -> {
+                        Toast.makeText(activity, "Checking your email..", Toast.LENGTH_LONG).show()
+                        RELOAD = 1
+                    }
+                }
+            }
+            Thread.sleep(1000)
+            if (RELOAD == 1) {
+                profileBinding.apply {
+                    icVerified.visibility = View.VISIBLE
+                    icUnverified.visibility = View.GONE
 
+                }
+            } else {
+                if (STATUS == 0) {
+                    userData?.sendEmailVerification()?.addOnCompleteListener {
+                        if (it.isSuccessful) {
+                            Toast.makeText(
+                                activity,
+                                "Email verification has been sent",
+                                Toast.LENGTH_SHORT
+                            )
+                                .show()
+                            STATUS = 1
+                        } else {
+                            Toast.makeText(activity, it.exception?.message, Toast.LENGTH_SHORT)
+                                .show()
+                        }
+                    }
+                } else {
+                    Toast.makeText(
+                        activity,
+                        "Check your email verification!",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                    Navigation.findNavController(view).navigate(R.id.nav_home)
+                }
+            }
+        }
     }
 
     @SuppressLint("QueryPermissionsNeeded")
     private fun intentCamera() {
-        Intent(MediaStore.ACTION_IMAGE_CAPTURE).also { intent ->
+        Intent(Intent.ACTION_PICK).also { intent ->
+            intent.type = "image/*"
             activity?.packageManager?.let {
                 intent.resolveActivity(it).also {
                     startActivityForResult(intent, REQUEST_CAMERA)
@@ -120,11 +180,19 @@ class ProfileFragment : Fragment() {
         }
     }
 
+    private fun getImage() {
+        val intent = Intent(Intent.ACTION_PICK)
+        intent.type = "image/*"
+        startActivityForResult(intent, IMAGE_PICK_CODE)
+    }
+
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
-        if (requestCode == REQUEST_CAMERA && resultCode == RESULT_OK) {
-            val imgBitmap = data?.extras?.get("data") as Bitmap
-            uploadImage(imgBitmap)
+        if (requestCode == IMAGE_PICK_CODE && resultCode == RESULT_OK) {
+            val img = data?.data
+            myBitmap = MediaStore.Images.Media.getBitmap(requireActivity().contentResolver, img)
+            Log.d("GAMBARRR", "data.data${data?.data}\nbitmap: ${myBitmap as Bitmap}")
+            uploadImage(myBitmap as Bitmap)
         }
     }
 
@@ -137,9 +205,9 @@ class ProfileFragment : Fragment() {
 
         ref.putBytes(image).addOnCompleteListener {
             if (it.isSuccessful) {
-                ref.downloadUrl.addOnCompleteListener {
-                    it.result?.let {
-                        imageUri = it
+                ref.downloadUrl.addOnCompleteListener { task ->
+                    task.result?.let { uri ->
+                        imageUri = uri
                         profileBinding.ivProfile.setImageBitmap(imgBitmap)
                     }
                 }
@@ -149,6 +217,9 @@ class ProfileFragment : Fragment() {
 
     companion object {
         const val REQUEST_CAMERA = 100
+        var RELOAD = 0
+        var STATUS = 0
+        const val IMAGE_PICK_CODE = 1000
     }
 
 }

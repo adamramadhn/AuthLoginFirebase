@@ -21,4 +21,6 @@
     <string name="phone">Phone</string>
     <string name="required_name">Name is required!</string>
     <string name="required_phone">Pleas fill your phone number</string>
+    <string name="verified_email">Verified Email</string>
+    <string name="unverified_email">Unverified Email</string>
 </resources>
