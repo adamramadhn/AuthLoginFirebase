@@ -166,6 +166,14 @@ class ProfileFragment : Fragment() {
                 }
             }
         }
+        profileBinding.tvChangePassword.setOnClickListener {
+            val actionChangePassword = ProfileFragmentDirections.actionChangePassword()
+            Navigation.findNavController(it).navigate(actionChangePassword)
+        }
+        profileBinding.etEmail.setOnClickListener {
+            val actionUpdateEmail = ProfileFragmentDirections.actionUpdateEmail()
+            Navigation.findNavController(it).navigate(actionUpdateEmail)
+        }
     }
 
     @SuppressLint("QueryPermissionsNeeded")

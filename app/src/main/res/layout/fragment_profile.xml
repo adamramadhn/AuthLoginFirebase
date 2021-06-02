@@ -54,7 +54,7 @@
                 android:layout_marginTop="8dp"
                 android:layout_marginEnd="32dp"
                 android:ems="10"
-                android:enabled="false"
+                android:focusableInTouchMode="false"
                 android:hint="@string/your_email"
                 android:inputType="textEmailAddress"
                 app:layout_constraintEnd_toEndOf="@+id/etName"
@@ -68,6 +68,7 @@
                 android:layout_marginTop="8dp"
                 android:ems="10"
                 android:enabled="false"
+                android:focusableInTouchMode="false"
                 android:hint="@string/phone"
                 android:inputType="phone"
                 app:layout_constraintEnd_toEndOf="@+id/etName"
@@ -78,46 +79,56 @@
                 android:id="@+id/btnUpdate"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
                 android:layout_marginTop="16dp"
                 android:background="@color/primaryVariant"
                 android:text="@string/save"
-                android:textColor="#FFFFFF"
-                app:layout_constraintEnd_toEndOf="@+id/etPhone"
+                android:textColor="@color/onPrimary"
                 app:layout_constraintStart_toStartOf="@+id/etPhone"
-                app:layout_constraintTop_toBottomOf="@+id/etPhone" />
+                app:layout_constraintTop_toBottomOf="@+id/tvChangePassword" />
 
             <ImageView
-                android:visibility="gone"
                 android:id="@+id/ic_verified"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:contentDescription="@string/verified_email"
                 android:src="@drawable/ic_verified"
+                android:visibility="gone"
                 app:layout_constraintBottom_toBottomOf="@+id/etEmail"
                 app:layout_constraintEnd_toEndOf="@+id/etName"
                 app:layout_constraintStart_toEndOf="@+id/etEmail"
-                app:layout_constraintTop_toTopOf="@+id/etEmail"
-                android:contentDescription="@string/verified_email" />
+                app:layout_constraintTop_toTopOf="@+id/etEmail" />
 
             <ImageView
                 android:id="@+id/ic_unverified"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:contentDescription="@string/unverified_email"
                 android:src="@drawable/ic_unverified"
                 app:layout_constraintBottom_toBottomOf="@+id/etEmail"
                 app:layout_constraintEnd_toEndOf="@+id/etName"
                 app:layout_constraintStart_toEndOf="@+id/etEmail"
-                app:layout_constraintTop_toTopOf="@+id/etEmail"
-                android:contentDescription="@string/unverified_email" />
+                app:layout_constraintTop_toTopOf="@+id/etEmail" />
 
             <Button
                 android:id="@+id/btn_unregis"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="10dp"
-                android:text="Unregis"
+                android:layout_marginTop="16dp"
+                android:text="@string/delete_account"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toEndOf="@+id/btnUpdate"
-                app:layout_constraintTop_toTopOf="@+id/btnUpdate" />
+                app:layout_constraintTop_toBottomOf="@+id/tvChangePassword" />
+
+            <TextView
+                android:id="@+id/tvChangePassword"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:text="@string/change_password"
+                app:layout_constraintEnd_toEndOf="@+id/etPhone"
+                app:layout_constraintTop_toBottomOf="@+id/etPhone" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 

@@ -7,6 +7,7 @@ import android.util.Patterns
 import android.widget.Toast
 import com.example.firebaseauth.databinding.ActivityLoginBinding
 import com.google.firebase.auth.FirebaseAuth
+import kotlin.math.log
 
 class LoginActivity : AppCompatActivity() {
     private lateinit var auth: FirebaseAuth
@@ -42,6 +43,11 @@ class LoginActivity : AppCompatActivity() {
 
         loginBinding.btnRegister.setOnClickListener {
             Intent(this, RegisterActivity::class.java).also {
+                startActivity(it)
+            }
+        }
+        loginBinding.btnForgotPassword.setOnClickListener {
+            Intent(this, ResetPasswordActivity::class.java).also {
                 startActivity(it)
             }
         }
